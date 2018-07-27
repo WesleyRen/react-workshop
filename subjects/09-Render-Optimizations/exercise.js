@@ -29,7 +29,7 @@ class ListView extends React.Component {
   };
 
   handleOnScroll = (event) => {
-    this.setState({scrollTop: event.target.scrollTop, viewableHeight: window.innerHeight})
+    this.setState({scrollTop: event.target.scrollTop, viewableHeight: this.scroller.clientHeight})
   };
 
   componentDidMount() {
