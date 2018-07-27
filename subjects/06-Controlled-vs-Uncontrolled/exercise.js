@@ -17,53 +17,92 @@
 ////////////////////////////////////////////////////////////////////////////////
 import React from "react";
 import ReactDOM from "react-dom";
-import serializeForm from "form-serialize";
+import serialize from "form-serialize";
 
 class CheckoutForm extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>Checkout</h1>
-        <form>
-          <fieldset>
-            <legend>Billing Address</legend>
-            <p>
-              <label>
-                Billing Name: <input type="text" />
-              </label>
-            </p>
-            <p>
-              <label>
-                Billing State: <input type="text" size="2" />
-              </label>
-            </p>
-          </fieldset>
 
-          <br />
+    state = {
+        shippingName: "",
+        shippingState: "",
+        isShippingSameAsBillingChecked: true
+    };
 
-          <fieldset>
-            <label>
-              <input type="checkbox" /> Same as billing
-            </label>
-            <legend>Shipping Address</legend>
-            <p>
-              <label>
-                Shipping Name: <input type="text" />
-              </label>
-            </p>
-            <p>
-              <label>
-                Shipping State: <input type="text" size="2" />
-              </label>
-            </p>
-          </fieldset>
+    handleUpdate(event) {
+      var form = document.querySelector('#inputForm');
 
-          <p>
-            <button>Submit</button>
-          </p>
-        </form>
-      </div>
-    );
+      var values = serialize(form, { hash: true });
+        console.log(values);
+      if (values.isSameAsBillingCheckbox && "on" === values.isSameAsBillingCheckbox) {
+        this.setState({isShippingSameAsBillingChecked: true})
+        if (values.billingName) {
+            this.setState({shippingName: values.billingName});
+        }
+        if (values.billingState) {
+            this.setState({shippingState: values.billingState});
+        }
+      } else {
+          this.setState({
+              shippingName: values.shippingName,
+              shippingState: values.shippingState,
+              isShippingSameAsBillingChecked: false});
+      }
+    }
+
+    submit(event) {
+      event.preventDefault();
+      var form = document.querySelector('#inputForm');
+      console.log(serialize(form, { hash: true }));
+    }
+
+    render() {
+
+      return (
+        <div>
+          <h1>Checkout</h1>
+          <form id="inputForm" onChange={(event) => this.handleUpdate(event)}
+                               onSubmit={(event) => this.submit(event)}>
+            <fieldset>
+              <legend>Billing Address</legend>
+              <p>
+                <label>
+                  Billing Name: <input name="billingName" type="text" />
+                </label>
+              </p>
+              <p>
+                <label>
+                  Billing State: <input name="billingState" type="text" size="2" />
+                </label>
+              </p>
+            </fieldset>
+
+            <br />
+
+            <fieldset>
+              <label>
+                <input name="isSameAsBillingCheckbox" type="checkbox"
+                       defaultChecked={this.state.isShippingSameAsBillingChecked} /> Same as billing
+              </label>
+              <legend>Shipping Address</legend>
+              <p>
+                <label>
+                  Shipping Name: <input name="shippingName" value={this.state.shippingName} type="text"
+                                        readOnly={this.state.isShippingSameAsBillingChecked}/>
+                </label>
+              </p>
+              <p>
+                <label>
+                  Shipping State: <input name="shippingState" value={this.state.shippingState} type="text" size="2"
+                                         readOnly={this.state.isShippingSameAsBillingChecked}/>
+                </label>
+              </p>
+            </fieldset>
+
+            <p>
+              <button>Submit</button>
+            </p>
+          </form>
+        </div>
+      );
   }
 }
 

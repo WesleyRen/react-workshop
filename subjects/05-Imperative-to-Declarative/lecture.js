@@ -15,6 +15,20 @@ styles.theremin = {
   display: "inline-block"
 };
 
+class Tone extends React.Component {
+  componentDidMount() {
+    this.oscillator = createOscillator();
+
+    const { isPlayin, pitch, volumne } = this.props;
+
+    if (isPlaying) {
+      this.oscillator.setPitchBend(pitch);
+
+    }
+
+  }
+}
+
 class App extends React.Component {
   componentDidMount() {
     this.oscillator = createOscillator();
@@ -46,13 +60,18 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>What does it mean to be declarative?</h1>
-        <div
-          style={styles.theremin}
-          onMouseEnter={this.play}
-          onMouseLeave={this.stop}
-          onMouseMove={this.changeTone}
-        />
+          <h1>What does it mean to be declarative?</h1>
+          <div
+              style={styles.theremin}
+              onMouseEnter={this.play}
+              onMouseLeave={this.stop}
+              onMouseMove={this.changeTone}>
+              <Tone
+                  isPlaying={true}
+                  pitch={0.4}
+                  volume={0.2}
+              />
+          </div>
       </div>
     );
   }

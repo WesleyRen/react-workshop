@@ -16,37 +16,32 @@ class Modal extends React.Component {
     children: PropTypes.node
   };
 
-  open() {
-    $(this.node).modal("show");
-  }
-
-  close() {
-    $(this.node).modal("hide");
+  componentDidUpdate() {
+      (this.props.isOpen) ? $(this.node).modal("show") : $(this.node).modal("hide");
   }
 
   render() {
-    return (
+      return (
       <div className="modal fade" ref={node => (this.node = node)}>
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
               <h4 className="modal-title">{this.props.title}</h4>
             </div>
-            <div className="modal-body">{this.props.children}</div>
+            <div className="modal-body">{this.props.children}
+
+            </div>
           </div>
         </div>
+
       </div>
     );
   }
 }
 
 class App extends React.Component {
-  openModal = () => {
-    this.modal.open();
-  };
-
-  closeModal = () => {
-    this.modal.close();
+  state = {
+    isModalOpen: false
   };
 
   render() {
@@ -54,13 +49,15 @@ class App extends React.Component {
       <div className="container">
         <h1>Let’s make bootstrap modal declarative</h1>
 
-        <button className="btn btn-primary" onClick={this.openModal}>
-          open modal
+        <button className="btn btn-primary" onClick={() => this.setState({
+            isModalOpen: true
+        })}>
+            {this.state.isModalOpen ? "close" : "open"} modal
         </button>
 
         <Modal
           title="Declarative is better"
-          ref={modal => (this.modal = modal)}
+          isOpen={this.state.isModalOpen}
         >
           <p>Calling methods on instances is a FLOW not a STOCK!</p>
           <p>
@@ -71,13 +68,14 @@ class App extends React.Component {
             You have to experience it over time, rather than in
             snapshots of state.
           </p>
-          <button
-            onClick={this.closeModal}
-            type="button"
-            className="btn btn-default"
-          >
-            Close
-          </button>
+            <button
+                onClick={() => this.setState({isModalOpen: false})}
+                type="button"
+                className="btn btn-default"
+            >
+                Close
+            </button>
+
         </Modal>
       </div>
     );
