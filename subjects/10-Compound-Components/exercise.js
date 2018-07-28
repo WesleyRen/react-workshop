@@ -21,68 +21,93 @@ import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 
+const radioOptions = {
+    "am": {value: "am", label: "AM"},
+    "fm": {value: "fm", label: "FM"},
+    "tape": {value: "tape", label: "Tape"},
+    "aux": {value: "aux", label: "Aux"},
+};
+
 class RadioGroup extends React.Component {
-  static propTypes = {
-    defaultValue: PropTypes.string
+  state = { activeIndex: 1 };
+
+  handleSelect = (index) => {
+      if (this.state.activeIndex !== index) {
+          this.setState({activeIndex: index});
+      }
   };
 
   render() {
-    return <div>{this.props.children}</div>;
+      const children = React.Children.map(
+          this.props.children,
+          (child, index) => {
+              console.log(this.state);
+              if (child.type === RadioOption) {
+                  console.log(index);
+                  return React.cloneElement(child, {
+                      _isSelected: (index === this.state.activeIndex),
+                      _onRadioClick: () => this.handleSelect(index)
+                  });
+              } else {
+                  return child;
+              }
+          });
+
+          return <div>{children}</div>;
+
   }
 }
 
 class RadioOption extends React.Component {
-  static propTypes = {
-    value: PropTypes.string
-  };
+    render() {
+        const {children, _isSelected, _onRadioClick} = this.props;
 
-  render() {
-    return (
-      <div>
-        <RadioIcon isSelected={false} /> {this.props.children}
-      </div>
-    );
-  }
+        return <div onClick={_onRadioClick}>
+            <RadioIcon _isSelected={_isSelected}/>
+            {children}
+            </div>;
+    }
 }
 
 class RadioIcon extends React.Component {
-  static propTypes = {
-    isSelected: PropTypes.bool.isRequired
-  };
+    render() {
+        const {_isSelected} = this.props;
+        console.log(_isSelected);
 
-  render() {
-    return (
-      <div
-        style={{
-          borderColor: "#ccc",
-          borderWidth: 3,
-          borderStyle: this.props.isSelected ? "inset" : "outset",
-          height: 16,
-          width: 16,
-          display: "inline-block",
-          cursor: "pointer",
-          background: this.props.isSelected ? "rgba(0, 0, 0, 0.05)" : ""
-        }}
-      />
-    );
-  }
+        return (
+            <div
+                style={{
+                    borderColor: "#ccc",
+                    borderWidth: 3,
+                    borderStyle: _isSelected ? "inset" : "outset",
+                    height: 16,
+                    width: 16,
+                    display: "inline-block",
+                    cursor: "pointer",
+                    marginRight: "7px",
+                    background: _isSelected ? "rgba(0, 0, 0, 0.05)" : ""
+                }}
+            />
+        );
+    }
 }
 
 class App extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>♬ It's about time that we all turned off the radio ♫</h1>
+    render() {
+        return (
+            <div>
+                <h1>♬ It's about time that we all turned off the radio ♫</h1>
 
-        <RadioGroup defaultValue="fm">
-          <RadioOption value="am">AM</RadioOption>
-          <RadioOption value="fm">FM</RadioOption>
-          <RadioOption value="tape">Tape</RadioOption>
-          <RadioOption value="aux">Aux</RadioOption>
-        </RadioGroup>
-      </div>
-    );
-  }
+                <RadioGroup defaultValue="fm">
+                    <RadioOption value="am">AM</RadioOption>
+                    <RadioOption value="fm">FM</RadioOption>
+                    <RadioOption value="tape">Tape</RadioOption>
+                    <RadioOption value="aux">Aux</RadioOption>
+                </RadioGroup>
+            </div>
+        );
+    }
 }
+
 
 ReactDOM.render(<App />, document.getElementById("app"));
